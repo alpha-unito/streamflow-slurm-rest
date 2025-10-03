@@ -1,0 +1,33 @@
+version: v1.0
+
+workflows:
+  hello-slurm:
+    type: cwl
+    config:
+      file: hello.cwl
+    bindings:
+      - step: /
+        target:
+          deployment: slurm
+          service: broadwell
+
+deployments:
+  c3sssh:
+    type: ssh
+    workdir: /beegfs/home/tommaso.fogliobonda/streamflow
+    config:
+      nodes:
+        - c3sfr1.di.unito.it
+      username: tommaso.fogliobonda
+      sshKey: ~/.ssh/unito/hpc
+      checkHostKey: false
+
+  slurm:
+    type: unito.slurmapi
+    config:
+      services:
+        broadwell:
+          partition: "broadwell"
+          api_address: "https://api.slurm.hpc4ai.unito.it"
+          jwt_token: "/home/tommo/Desktop/Coding/Alpha/streamflow-slurm/streamflow-slurm-api/examples/basic/jwt"
+    wraps: c3sssh

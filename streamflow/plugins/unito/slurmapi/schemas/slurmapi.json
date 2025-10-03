@@ -1,0 +1,649 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://streamflow.di.unito.it/schemas/deployment/connector/slurmapi.json",
+  "type": "object",
+  "$defs": {
+    "service": {
+      "type": "object",
+      "title": "SlurmApiService",
+      "description": "This complex type represents a submission to the Slurm queue manager.",
+      "properties": {
+        "jwt_token": {
+          "type": "string",
+          "title": "JWT Token",
+          "description": "JWT token used for authentication. Can be either a raw token or a path to a file containing the token."
+        },
+        "api_address": {
+          "type": "string",
+          "title": "API Address",
+          "description": "Base URL of the Slurm REST API endpoint"
+        },
+        "api_version": {
+          "type": "string",
+          "title": "API Version",
+          "description": "Version of the Slurm REST API to use"
+        },
+        "account": {
+          "type": "string",
+          "title": "Account",
+          "description": "Account associated with the job"
+        },
+        "account_gather_frequency": {
+          "type": "string",
+          "title": "Account Gather Frequency",
+          "description": "Job accounting and profiling sampling intervals in seconds"
+        },
+        "admin_comment": {
+          "type": "string",
+          "title": "Admin Comment",
+          "description": "Arbitrary comment made by administrator"
+        },
+        "allocation_node_list": {
+          "type": "string",
+          "title": "Allocation Node List",
+          "description": "Local node making the resource allocation"
+        },
+        "allocation_node_port": {
+          "type": "integer",
+          "title": "Allocation Node Port",
+          "description": "Port to send allocation confirmation to"
+        },
+        "argv": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Argv",
+          "description": "Arguments for the job script"
+        },
+        "array": {
+          "type": "string",
+          "title": "Array",
+          "description": "Job array index value specification"
+        },
+        "batch_features": {
+          "type": "string",
+          "title": "Batch Features",
+          "description": "Features required for batch script's node"
+        },
+        "begin_time": {
+          "type": "integer",
+          "title": "Begin Time",
+          "description": "Earliest time the job may start (UNIX timestamp)"
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Flags",
+          "description": "Job flags"
+        },
+        "burst_buffer": {
+          "type": "string",
+          "title": "Burst Buffer",
+          "description": "Burst buffer specifications"
+        },
+        "clusters": {
+          "type": "string",
+          "title": "Clusters",
+          "description": "Clusters that a federated job can run on"
+        },
+        "cluster_constraint": {
+          "type": "string",
+          "title": "Cluster Constraint",
+          "description": "Required features that a federated cluster must have to have a sibling job submitted to it"
+        },
+        "comment": {
+          "type": "string",
+          "title": "Comment",
+          "description": "Arbitrary comment made by user"
+        },
+        "contiguous": {
+          "type": "boolean",
+          "title": "Contiguous",
+          "description": "True if job requires contiguous nodes"
+        },
+        "container": {
+          "type": "string",
+          "title": "Container",
+          "description": "Absolute path to OCI container bundle"
+        },
+        "container_id": {
+          "type": "string",
+          "title": "Container ID",
+          "description": "OCI container ID"
+        },
+        "core_specification": {
+          "type": "integer",
+          "title": "Core Specification",
+          "description": "Specialized core count"
+        },
+        "thread_specification": {
+          "type": "integer",
+          "title": "Thread Specification",
+          "description": "Specialized thread count"
+        },
+        "cpu_binding": {
+          "type": "string",
+          "title": "CPU Binding",
+          "description": "Method for binding tasks to allocated CPUs"
+        },
+        "cpu_binding_flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "CPU Binding Flags",
+          "description": "Flags for CPU binding"
+        },
+        "cpu_frequency": {
+          "type": "string",
+          "title": "CPU Frequency",
+          "description": "Requested CPU frequency range"
+        },
+        "cpus_per_tres": {
+          "type": "string",
+          "title": "CPUs Per TRES",
+          "description": "Semicolon delimited list of TRES=# values indicating how many CPUs should be allocated for each specified TRES"
+        },
+        "crontab": {
+          "title": "Crontab",
+          "description": "Cron entry for recurring job"
+        },
+        "deadline": {
+          "type": "integer",
+          "title": "Deadline",
+          "description": "Latest time that the job may start (UNIX timestamp)"
+        },
+        "delay_boot": {
+          "type": "integer",
+          "title": "Delay Boot",
+          "description": "Number of seconds after job eligible start that nodes will be rebooted to satisfy feature specification"
+        },
+        "dependency": {
+          "type": "string",
+          "title": "Dependency",
+          "description": "Other jobs that must meet certain criteria before this job can start"
+        },
+        "end_time": {
+          "type": "integer",
+          "title": "End Time",
+          "description": "Expected end time (UNIX timestamp)"
+        },
+        "environment": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Environment",
+          "description": "Environment variables for the job"
+        },
+        "rlimits": {
+          "title": "RLimits",
+          "description": "Resource limits"
+        },
+        "excluded_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Excluded Nodes",
+          "description": "Nodes to exclude from job allocation"
+        },
+        "extra": {
+          "type": "string",
+          "title": "Extra",
+          "description": "Arbitrary string used for node filtering if extra constraints are enabled"
+        },
+        "constraints": {
+          "type": "string",
+          "title": "Constraints",
+          "description": "Comma-separated list of features that are required"
+        },
+        "group_id": {
+          "type": "string",
+          "title": "Group ID",
+          "description": "Group ID of the user that owns the job"
+        },
+        "hetjob_group": {
+          "type": "integer",
+          "title": "HetJob Group",
+          "description": "Unique sequence number applied to this component of the heterogeneous job"
+        },
+        "immediate": {
+          "type": "boolean",
+          "title": "Immediate",
+          "description": "If true, exit if resources are not available within the time period specified"
+        },
+        "job_id": {
+          "type": "integer",
+          "title": "Job ID",
+          "description": "Job ID"
+        },
+        "kill_on_node_fail": {
+          "type": "boolean",
+          "title": "Kill On Node Fail",
+          "description": "If true, kill job on node failure"
+        },
+        "licenses": {
+          "type": "string",
+          "title": "Licenses",
+          "description": "License(s) required by the job"
+        },
+        "mail_type": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Mail Type",
+          "description": "Mail event type(s)"
+        },
+        "mail_user": {
+          "type": "string",
+          "title": "Mail User",
+          "description": "User to receive email notifications"
+        },
+        "mcs_label": {
+          "type": "string",
+          "title": "MCS Label",
+          "description": "Multi-Category Security label on the job"
+        },
+        "memory_binding": {
+          "type": "string",
+          "title": "Memory Binding",
+          "description": "Binding map for map/mask_cpu"
+        },
+        "memory_binding_type": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Memory Binding Type",
+          "description": "Method for binding tasks to memory"
+        },
+        "memory_per_tres": {
+          "type": "string",
+          "title": "Memory Per TRES",
+          "description": "Semicolon delimited list of TRES=# values indicating how much memory in megabytes should be allocated for each specified TRES"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Job name"
+        },
+        "network": {
+          "type": "string",
+          "title": "Network",
+          "description": "Network specs for job step"
+        },
+        "nice": {
+          "type": "integer",
+          "title": "Nice",
+          "description": "Requested job priority change"
+        },
+        "tasks": {
+          "type": "integer",
+          "title": "Tasks",
+          "description": "Number of tasks"
+        },
+        "oom_kill_step": {
+          "type": "integer",
+          "title": "OOM Kill Step",
+          "description": "Kill whole step in case of OOM in one of the tasks"
+        },
+        "open_mode": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Open Mode",
+          "description": "Open mode used for stdout and stderr files"
+        },
+        "reserve_ports": {
+          "type": "integer",
+          "title": "Reserve Ports",
+          "description": "Port to send various notification msg to"
+        },
+        "overcommit": {
+          "type": "boolean",
+          "title": "Overcommit",
+          "description": "Overcommit resources"
+        },
+        "partition": {
+          "type": "string",
+          "title": "Partition",
+          "description": "Partition assigned to the job"
+        },
+        "distribution_plane_size": {
+          "title": "Distribution Plane Size",
+          "description": "Distribution plane size"
+        },
+        "power_flags": {
+          "type": "array",
+          "title": "Power Flags",
+          "description": "Power management flags"
+        },
+        "prefer": {
+          "type": "string",
+          "title": "Prefer",
+          "description": "Comma-separated list of features that are preferred but not required"
+        },
+        "hold": {
+          "type": "boolean",
+          "title": "Hold",
+          "description": "Hold (true) or release (false) job"
+        },
+        "priority": {
+          "title": "Priority",
+          "description": "Job priority"
+        },
+        "profile": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Profile",
+          "description": "Profile used by the acct_gather_profile plugin"
+        },
+        "qos": {
+          "type": "string",
+          "title": "QOS",
+          "description": "Quality of Service assigned to the job"
+        },
+        "reboot": {
+          "type": "boolean",
+          "title": "Reboot",
+          "description": "Node reboot requested before start"
+        },
+        "required_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Nodes",
+          "description": "Nodes required for job allocation"
+        },
+        "requeue": {
+          "type": "boolean",
+          "title": "Requeue",
+          "description": "Determines whether the job may be requeued"
+        },
+        "reservation": {
+          "type": "string",
+          "title": "Reservation",
+          "description": "Name of reservation to use"
+        },
+        "script": {
+          "type": "string",
+          "title": "Script",
+          "description": "Job batch script"
+        },
+        "shared": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Shared",
+          "description": "How the job can share resources with other jobs, if at all"
+        },
+        "site_factor": {
+          "type": "integer",
+          "title": "Site Factor",
+          "description": "Site-specific priority factor"
+        },
+        "spank_environment": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "SPANK Environment",
+          "description": "SPANK plugin environment variables"
+        },
+        "distribution": {
+          "type": "string",
+          "title": "Distribution",
+          "description": "Layout"
+        },
+        "time_limit": {
+          "title": "Time Limit",
+          "description": "Maximum time limit for job execution"
+        },
+        "time_minimum": {
+          "title": "Time Minimum",
+          "description": "Minimum time limit"
+        },
+        "tres_bind": {
+          "type": "string",
+          "title": "TRES Bind",
+          "description": "Task to TRES binding directives"
+        },
+        "tres_freq": {
+          "type": "string",
+          "title": "TRES Freq",
+          "description": "TRES frequency directives"
+        },
+        "tres_per_job": {
+          "type": "string",
+          "title": "TRES Per Job",
+          "description": "Comma-separated list of TRES=# values to be allocated for every job"
+        },
+        "tres_per_node": {
+          "type": "string",
+          "title": "TRES Per Node",
+          "description": "Comma-separated list of TRES=# values to be allocated for every node"
+        },
+        "tres_per_socket": {
+          "type": "string",
+          "title": "TRES Per Socket",
+          "description": "Comma-separated list of TRES=# values to be allocated for every socket"
+        },
+        "tres_per_task": {
+          "type": "string",
+          "title": "TRES Per Task",
+          "description": "Comma-separated list of TRES=# values to be allocated for every task"
+        },
+        "user_id": {
+          "type": "string",
+          "title": "User ID",
+          "description": "User ID that owns the job"
+        },
+        "wait_all_nodes": {
+          "type": "boolean",
+          "title": "Wait All Nodes",
+          "description": "If true, wait to start until after all nodes have booted"
+        },
+        "kill_warning_flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Kill Warning Flags",
+          "description": "Flags related to job signals"
+        },
+        "kill_warning_signal": {
+          "type": "string",
+          "title": "Kill Warning Signal",
+          "description": "Signal to send when approaching end time"
+        },
+        "kill_warning_delay": {
+          "title": "Kill Warning Delay",
+          "description": "Time before end time to send warning signal"
+        },
+        "current_working_directory": {
+          "type": "string",
+          "title": "Current Working Directory",
+          "description": "Working directory to use for the job"
+        },
+        "cpus_per_task": {
+          "type": "integer",
+          "title": "CPUs Per Task",
+          "description": "Number of CPUs required by each task"
+        },
+        "minimum_cpus": {
+          "type": "integer",
+          "title": "Minimum CPUs",
+          "description": "Minimum number of CPUs required"
+        },
+        "maximum_cpus": {
+          "type": "integer",
+          "title": "Maximum CPUs",
+          "description": "Maximum number of CPUs required"
+        },
+        "nodes": {
+          "type": "string",
+          "title": "Nodes",
+          "description": "Node count range specification"
+        },
+        "minimum_nodes": {
+          "type": "integer",
+          "title": "Minimum Nodes",
+          "description": "Minimum node count"
+        },
+        "maximum_nodes": {
+          "type": "integer",
+          "title": "Maximum Nodes",
+          "description": "Maximum node count"
+        },
+        "minimum_boards_per_node": {
+          "type": "integer",
+          "title": "Minimum Boards Per Node",
+          "description": "Boards per node required"
+        },
+        "minimum_sockets_per_board": {
+          "type": "integer",
+          "title": "Minimum Sockets Per Board",
+          "description": "Sockets per board required"
+        },
+        "sockets_per_node": {
+          "type": "integer",
+          "title": "Sockets Per Node",
+          "description": "Sockets per node required"
+        },
+        "threads_per_core": {
+          "type": "integer",
+          "title": "Threads Per Core",
+          "description": "Threads per core required"
+        },
+        "tasks_per_node": {
+          "type": "integer",
+          "title": "Tasks Per Node",
+          "description": "Number of tasks to invoke on each node"
+        },
+        "tasks_per_socket": {
+          "type": "integer",
+          "title": "Tasks Per Socket",
+          "description": "Number of tasks to invoke on each socket"
+        },
+        "tasks_per_core": {
+          "type": "integer",
+          "title": "Tasks Per Core",
+          "description": "Number of tasks to invoke on each core"
+        },
+        "tasks_per_board": {
+          "type": "integer",
+          "title": "Tasks Per Board",
+          "description": "Number of tasks to invoke on each board"
+        },
+        "ntasks_per_tres": {
+          "type": "integer",
+          "title": "NTasks Per TRES",
+          "description": "Number of tasks that can access each GPU"
+        },
+        "minimum_cpus_per_node": {
+          "type": "integer",
+          "title": "Minimum CPUs Per Node",
+          "description": "Minimum number of CPUs per node"
+        },
+        "memory_per_cpu": {
+          "title": "Memory Per CPU",
+          "description": "Memory required per CPU"
+        },
+        "memory_per_node": {
+          "title": "Memory Per Node",
+          "description": "Memory required per node"
+        },
+        "temporary_disk_per_node": {
+          "type": "integer",
+          "title": "Temporary Disk Per Node",
+          "description": "Minimum tmp disk space required per node"
+        },
+        "selinux_context": {
+          "type": "string",
+          "title": "SELinux Context",
+          "description": "SELinux context"
+        },
+        "required_switches": {
+          "title": "Required Switches",
+          "description": "Required switches"
+        },
+        "segment_size": {
+          "title": "Segment Size",
+          "description": "Segment size"
+        },
+        "standard_error": {
+          "type": "string",
+          "title": "Standard Error",
+          "description": "Path to stderr file"
+        },
+        "standard_input": {
+          "type": "string",
+          "title": "Standard Input",
+          "description": "Path to stdin file"
+        },
+        "standard_output": {
+          "type": "string",
+          "title": "Standard Output",
+          "description": "Path to stdout file"
+        },
+        "wait_for_switch": {
+          "type": "integer",
+          "title": "Wait For Switch",
+          "description": "Maximum time to wait for switches in seconds"
+        },
+        "wckey": {
+          "type": "string",
+          "title": "WCKey",
+          "description": "Workload characterization key"
+        },
+        "x11": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "X11",
+          "description": "X11 forwarding options"
+        },
+        "x11_magic_cookie": {
+          "type": "string",
+          "title": "X11 Magic Cookie",
+          "description": "Magic cookie for X11 forwarding"
+        },
+        "x11_target_host": {
+          "type": "string",
+          "title": "X11 Target Host",
+          "description": "Hostname or UNIX socket for X11 forwarding"
+        },
+        "x11_target_port": {
+          "type": "integer",
+          "title": "X11 Target Port",
+          "description": "TCP port for X11 forwarding"
+        }
+      }
+    }
+  },
+  "$ref": "base/queue_manager.json",
+  "properties": {
+    "services": {
+      "type": "object",
+      "title": "Services",
+      "description": "Map containing named configurations of Slurm submissions. Parameters can be either specified as #SBATCH directives in a file or directly in YAML format.",
+      "patternProperties": {
+        "^[a-z][a-zA-Z0-9._-]*$": {
+          "$ref": "#/$defs/service"
+        }
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}
