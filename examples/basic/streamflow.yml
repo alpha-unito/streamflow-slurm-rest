@@ -23,10 +23,10 @@ deployments:
       checkHostKey: false
 
   slurm:
-    type: unito.slurmapi
+    type: unito.slurmrest
     config:
       api_address: "https://api.slurm.hpc4ai.unito.it"
-      jwt_token: "/home/tommo/Desktop/Coding/Alpha/streamflow-slurm/streamflow-slurm-api/examples/jwt"
+      jwt_token: "/home/tommo/Desktop/Coding/Alpha/streamflow-slurm/streamflow-slurm-rest/examples/jwt"
       services:
         broadwell:
           partition: "broadwell"

@@ -32,7 +32,7 @@ EXCLUDED_CONNECTOR_PARAMETERS = [
 ]
 
 
-def _slurmapi_request(
+def _slurmrest_request(
     method: str,
     url: str,
     jwt_token: str,
@@ -80,7 +80,7 @@ def _slurmapi_request(
     return response
 
 
-class SlurmApiService(QueueManagerService):
+class SlurmRestService(QueueManagerService):
     def __init__(
         self,
         account: str | None = None,
@@ -317,13 +317,13 @@ class SlurmApiService(QueueManagerService):
         self.x11_target_port = x11_target_port
 
 
-class SlurmApiConnector(QueueManagerConnector):
+class SlurmRestConnector(QueueManagerConnector):
     @classmethod
     def get_schema(cls) -> str:
         return (
             files(__package__)
             .joinpath("schemas")
-            .joinpath("slurmapi.json")
+            .joinpath("slurmrest.json")
             .read_text("utf-8")
         )
 
@@ -344,10 +344,10 @@ class SlurmApiConnector(QueueManagerConnector):
         self.api_address: str = address
         self.api_version: str = version
 
-    def _get_service(self, location: ExecutionLocation) -> SlurmApiService:
+    def _get_service(self, location: ExecutionLocation) -> SlurmRestService:
         if location.service not in self.services:
             raise ValueError(f"‼️  Service {location.service} not found")
-        return cast(SlurmApiService, self.services.get(location.service))
+        return cast(SlurmRestService, self.services.get(location.service))
 
     def _get_jwt_token(self) -> str:
         # token can be a path or the token itself
@@ -358,7 +358,7 @@ class SlurmApiConnector(QueueManagerConnector):
             return self.jwt_token
 
     async def _get_output(self, job_id: str, location: ExecutionLocation) -> str:
-        r = _slurmapi_request(
+        r = _slurmrest_request(
             "GET",
             f"{self.api_address}/slurmdb/{self.api_version}/job/{job_id}",
             self._get_jwt_token(),
@@ -381,7 +381,7 @@ class SlurmApiConnector(QueueManagerConnector):
             return ""
 
     async def _get_returncode(self, job_id: str, location: ExecutionLocation) -> int:
-        r = _slurmapi_request(
+        r = _slurmrest_request(
             "GET",
             f"{self.api_address}/slurm/{self.api_version}/job/{job_id}",
             self._get_jwt_token(),
@@ -401,7 +401,7 @@ class SlurmApiConnector(QueueManagerConnector):
         key=partial(cachetools.keys.hashkey, "running_jobs"),  # type: ignore
     )
     async def _get_running_jobs(self, location: ExecutionLocation) -> Collection[str]:
-        r = _slurmapi_request(
+        r = _slurmrest_request(
             "GET",
             f"{self.api_address}/slurm/{self.api_version}/jobs",
             self._get_jwt_token(),
@@ -442,13 +442,13 @@ class SlurmApiConnector(QueueManagerConnector):
 
     @property
     def _service_class(self) -> type[QueueManagerService]:
-        return SlurmApiService
+        return SlurmRestService
 
     async def _remove_jobs(
         self, location: ExecutionLocation, jobs: MutableSequence[str]
     ) -> None:
         # FIXME
-        r = _slurmapi_request(
+        r = _slurmrest_request(
             "DELETE",
             f"{self.api_address}/slurm/{self.api_version}/jobs",
             self._get_jwt_token(),
@@ -495,7 +495,7 @@ class SlurmApiConnector(QueueManagerConnector):
             if v is not None and k not in EXCLUDED_SERVICE_PARAMETERS:
                 job_cfg[k] = v
 
-        r = _slurmapi_request(
+        r = _slurmrest_request(
             "POST",
             f"{self.api_address}/slurm/{self.api_version}/job/submit",
             self._get_jwt_token(),

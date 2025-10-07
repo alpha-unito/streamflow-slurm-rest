@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://streamflow.di.unito.it/schemas/deployment/connector/slurmapi.json",
+  "$id": "https://streamflow.di.unito.it/schemas/deployment/connector/slurmrest.json",
   "type": "object",
   "$defs": {
     "service": {
       "type": "object",
-      "title": "SlurmApiService",
+      "title": "SlurmRestService",
       "description": "This complex type represents a submission to the Slurm queue manager.",
       "properties": {
         "account": {

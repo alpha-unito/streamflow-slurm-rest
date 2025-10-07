@@ -3,11 +3,11 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "streamflow-slurm-api"
+name = "streamflow-slurm-rest"
 authors = [
     {name = "Tommaso Foglio Bonda", email = "tommaso.fogliobonda@unito.it"},
 ]
-description = "StreamFlow Slurm API connector plugin"
+description = "StreamFlow Slurm REST API connector plugin"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "LGPL-3.0-or-later"}
@@ -30,25 +30,25 @@ classifiers = [
 dynamic = ["dependencies", "version"]
 
 [project.urls]
-Repository = "https://github.com/alpha-unito/streamflow-slurm-api-connector"
+Repository = "https://github.com/alpha-unito/streamflow-slurm-rest-connector"
 
 [project.entry-points]
-"unito.streamflow.plugin" = {"unito.slurmapi" = "streamflow.plugins.unito.slurmapi.plugin:SlurmApiStreamFlowPlugin"}
+"unito.streamflow.plugin" = {"unito.slurmrest" = "streamflow.plugins.unito.slurmrest.plugin:SlurmRestStreamFlowPlugin"}
 
 [tool.setuptools]
 packages = [
     "streamflow",
     "streamflow.plugins", 
     "streamflow.plugins.unito",
-    "streamflow.plugins.unito.slurmapi"
+    "streamflow.plugins.unito.slurmrest"
 ]
 zip-safe = true
 [tool.setuptools.package-data]
-"streamflow.plugins.unito.slurmapi" = ["schemas/*.json"]
+"streamflow.plugins.unito.slurmrest" = ["schemas/*.json"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = "requirements.txt"}
-version = {attr = "streamflow.plugins.unito.slurmapi.version.VERSION"}
+version = {attr = "streamflow.plugins.unito.slurmrest.version.VERSION"}
 
 [tool.setuptools.dynamic.optional-dependencies]
 bandit = {file = "bandit-requirements.txt"}

@@ -25,11 +25,11 @@ deployments:
       sshKey: /path/to/ssh/key
       username: <username>
 
-  slurm-api-deployment:
-    type: unito.slurmapi
+  slurm-rest-deployment:
+    type: unito.slurmrest
     config:
       services:
-        slurm-api-service:
+        slurm-rest-service:
           api_address: <slurm_api_address>
           jwt_token: <jwt_token or path to jwt token file>
     wraps: ssh-deployment
