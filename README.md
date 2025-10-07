@@ -1,14 +1,16 @@
 # SLURM REST API Plugin for StreamFlow
 
-## Installation
+## Installation 
+**NOTE: not published on PyPI yet.**
+
 Simply install the package directory from [PyPI]() using [pip](https://pip.pypa.io/en/stable/). StreamFlow will automatically recognise it as a plugin and load it at each workflow execution.
 ```bash
-pip install streamflow-slurm
+pip install streamflow-slurmrest
 ```
 
 If everything worked correctly, whenever a workflow execution start the following message should be printed in the log:
 ```bash
-Successfully registered plugin streamflow.plugins.unito.slurmapi.plugin.SlurmApiStreamFlowPlugin
+Successfully registered plugin streamflow.plugins.unito.slurmrest.plugin.SlurmRestStreamFlowPlugin
 ```
 
 ## Usage
@@ -28,10 +30,13 @@ deployments:
   slurm-rest-deployment:
     type: unito.slurmrest
     config:
+      api_address: <slurm_api_address>
+      api_version: v0.0.43  # Optional, default is v0.0.43
+      jwt_token: <jwt_token or path to jwt token file>
       services:
         slurm-rest-service:
-          api_address: <slurm_api_address>
-          jwt_token: <jwt_token or path to jwt token file>
+          partition: <partition_name>
+          <other_slurm_job_options>: <value>
     wraps: ssh-deployment
 ```
 
