@@ -14,8 +14,6 @@ Successfully registered plugin streamflow.plugins.unito.slurmrest.plugin.SlurmRe
 ```
 
 ## Usage
-This plugin registers a new `Connector` component, called `SLURMConnector`, which extends the StreamFlow `ConnectorWrapper` class. This implies that the `SLURMConnector` can wrap an underlying `Connector` object through the `wraps` directive. The example below shows a possible `streamflow.yml` configuration file, where the `SLURMConnector` wraps an `SSHConnector` for remote execution offloading.
-
 ```yml
 deployments:
   ssh-deployment:
@@ -29,15 +27,16 @@ deployments:
 
   slurm-rest-deployment:
     type: unito.slurmrest
+    wraps: ssh-deployment
     config:
-      api_address: <slurm_api_address>
+      api_address: <slurm_api_address> # Required
       api_version: v0.0.43  # Optional, default is v0.0.43
-      jwt_token: <jwt_token or path to jwt token file>
+      jwt_token: <jwt_token or path to jwt token file> # Required
       services:
         slurm-rest-service:
           partition: <partition_name>
           <other_slurm_job_options>: <value>
-    wraps: ssh-deployment
+          ...
 ```
 
-The configuration for the deployment (service) follows that of the SLURM REST API for the /job/submit endpoint, and it is described in detail in the [official documentation](https://slurm.schedmd.com/rest_api.html). The only required fields are `api_address` and `jwt_token`.
+The configuration for the service follows that of the SLURM REST API for the /job/submit endpoint, and it is described in detail in the [official documentation](https://slurm.schedmd.com/rest_api.html) (see [job configuration](https://slurm.schedmd.com/rest_api.html#v0.0.43_job_desc_msg)). All configuration options are optional, except for `api_address` and `jwt_token`.
