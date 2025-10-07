@@ -4,7 +4,7 @@ workflows:
   hello-slurm:
     type: cwl
     config:
-      file: hello.cwl
+      file: main.cwl
     bindings:
       - step: /
         target:
@@ -26,7 +26,7 @@ deployments:
     type: unito.slurmapi
     config:
       api_address: "https://api.slurm.hpc4ai.unito.it"
-      jwt_token: "/home/tommo/Desktop/Coding/Alpha/streamflow-slurm/streamflow-slurm-api/examples/basic/jwt"
+      jwt_token: "/home/tommo/Desktop/Coding/Alpha/streamflow-slurm/streamflow-slurm-api/examples/jwt"
       services:
         broadwell:
           partition: "broadwell"

@@ -367,15 +367,15 @@ class SlurmApiConnector(QueueManagerConnector):
 
         output_path = r.json().get("jobs")[0].get("stdout_expanded", "")
 
-        print(f"#️⃣  Job stdout (first 1000 chars): {output_path[:1000]}")
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(
+                f"ℹ️  Stdout path for job {job_id} in SLURM API ({location.name}): {output_path}"
+            )
 
         if output_path := output_path.strip():
             stdout, _ = await super().run(
                 location=location, command=["cat", output_path], capture_output=True
             )  # type: ignore
-
-            print(f"    Output path: {output_path}")
-            print(f"    Output (first 1000 chars): {stdout[:1000]}")
             return stdout.strip()
         else:
             return ""
