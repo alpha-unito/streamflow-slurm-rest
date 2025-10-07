@@ -8,21 +8,6 @@
       "title": "SlurmApiService",
       "description": "This complex type represents a submission to the Slurm queue manager.",
       "properties": {
-        "jwt_token": {
-          "type": "string",
-          "title": "JWT Token",
-          "description": "JWT token used for authentication. Can be either a raw token or a path to a file containing the token."
-        },
-        "api_address": {
-          "type": "string",
-          "title": "API Address",
-          "description": "Base URL of the Slurm REST API endpoint"
-        },
-        "api_version": {
-          "type": "string",
-          "title": "API Version",
-          "description": "Version of the Slurm REST API to use"
-        },
         "account": {
           "type": "string",
           "title": "Account",
@@ -634,6 +619,22 @@
   },
   "$ref": "base/queue_manager.json",
   "properties": {
+    "jwt_token": {
+      "type": "string",
+      "title": "JWT Token",
+      "description": "JWT token used for authentication. Can be either a raw token or a path to a file containing the token."
+    },
+    "api_address": {
+      "type": "string",
+      "title": "API Address",
+      "description": "Base URL of the Slurm REST API endpoint"
+    },
+    "api_version": {
+      "type": "string",
+      "title": "API Version",
+      "description": "Version of the Slurm REST API to use"
+    },
+    
     "services": {
       "type": "object",
       "title": "Services",

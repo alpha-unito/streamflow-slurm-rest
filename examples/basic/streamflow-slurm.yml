@@ -25,9 +25,9 @@ deployments:
   slurm:
     type: unito.slurmapi
     config:
+      api_address: "https://api.slurm.hpc4ai.unito.it"
+      jwt_token: "/home/tommo/Desktop/Coding/Alpha/streamflow-slurm/streamflow-slurm-api/examples/basic/jwt"
       services:
         broadwell:
           partition: "broadwell"
-          api_address: "https://api.slurm.hpc4ai.unito.it"
-          jwt_token: "/home/tommo/Desktop/Coding/Alpha/streamflow-slurm/streamflow-slurm-api/examples/basic/jwt"
     wraps: c3sssh

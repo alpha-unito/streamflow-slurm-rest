@@ -23,7 +23,9 @@ from streamflow.deployment.connector.queue_manager import (
 from streamflow.log_handler import logger
 
 
-EXCLUDED_SERVICE_PARAMETERS = [
+EXCLUDED_SERVICE_PARAMETERS = []
+
+EXCLUDED_CONNECTOR_PARAMETERS = [
     "jwt_token",
     "api_address",
     "api_version",
@@ -81,9 +83,6 @@ def _slurmapi_request(
 class SlurmApiService(QueueManagerService):
     def __init__(
         self,
-        jwt_token: str,
-        api_address: str,
-        api_version: str = "v0.0.43",
         account: str | None = None,
         account_gather_frequency: str | None = None,
         admin_comment: str | None = None,
@@ -201,10 +200,6 @@ class SlurmApiService(QueueManagerService):
         x11_target_port: int | None = None,
     ):
         super().__init__()
-        self.jwt_token = jwt_token
-        self.api_address = api_address
-        self.api_version = api_version
-
         self.account = account
         self.account_gather_frequency = account_gather_frequency
         self.admin_comment = admin_comment
@@ -332,34 +327,64 @@ class SlurmApiConnector(QueueManagerConnector):
             .read_text("utf-8")
         )
 
+    def __init__(self, **kwargs: Any):
+        super().__init__(
+            **{
+                k: v
+                for k, v in kwargs.items()
+                if k not in EXCLUDED_CONNECTOR_PARAMETERS
+            }
+        )
+
+        token = kwargs["jwt_token"]
+        address = kwargs["api_address"]
+        version = kwargs.get("api_version", "v0.0.43")
+
+        self.jwt_token: str = token
+        self.api_address: str = address
+        self.api_version: str = version
+
     def _get_service(self, location: ExecutionLocation) -> SlurmApiService:
         if location.service not in self.services:
             raise ValueError(f"‼️  Service {location.service} not found")
         return cast(SlurmApiService, self.services.get(location.service))
 
-    def _get_jwt_token(self, location: ExecutionLocation) -> str:
-        service = self._get_service(location)
-
+    def _get_jwt_token(self) -> str:
         # token can be a path or the token itself
-        if os.path.exists(service.jwt_token):
-            with open(service.jwt_token, "r") as f:
+        if os.path.exists(self.jwt_token):
+            with open(self.jwt_token, "r") as f:
                 return f.read().strip()
         else:
-            return service.jwt_token
+            return self.jwt_token
 
-    # TODO: implement getting output from slurm api
     async def _get_output(self, job_id: str, location: ExecutionLocation) -> str:
-        raise NotImplementedError(
-            "‼️ Getting output from Slurm API is not implemented yet"
-        )
-
-    async def _get_returncode(self, job_id: str, location: ExecutionLocation) -> int:
-        service = self._get_service(location)
-
         r = _slurmapi_request(
             "GET",
-            f"{service.api_address}/slurm/{service.api_version}/job/{job_id}",
-            self._get_jwt_token(location),
+            f"{self.api_address}/slurmdb/{self.api_version}/job/{job_id}",
+            self._get_jwt_token(),
+            json={"job_id": job_id},
+        )
+
+        output_path = r.json().get("jobs")[0].get("stdout_expanded", "")
+
+        print(f"#️⃣  Job stdout (first 1000 chars): {output_path[:1000]}")
+
+        if output_path := output_path.strip():
+            stdout, _ = await super().run(
+                location=location, command=["cat", output_path], capture_output=True
+            )  # type: ignore
+
+            print(f"    Output path: {output_path}")
+            print(f"    Output (first 1000 chars): {stdout[:1000]}")
+            return stdout.strip()
+        else:
+            return ""
+
+    async def _get_returncode(self, job_id: str, location: ExecutionLocation) -> int:
+        r = _slurmapi_request(
+            "GET",
+            f"{self.api_address}/slurm/{self.api_version}/job/{job_id}",
+            self._get_jwt_token(),
         )
 
         return_code = f"{r.json().get('jobs')[0].get('exit_code').get('return_code').get('number')}"
@@ -373,15 +398,13 @@ class SlurmApiConnector(QueueManagerConnector):
 
     @cachedmethod(
         lambda self: self._jobs_cache,
-        key=partial(cachetools.keys.hashkey, "running_jobs"),
+        key=partial(cachetools.keys.hashkey, "running_jobs"),  # type: ignore
     )
     async def _get_running_jobs(self, location: ExecutionLocation) -> Collection[str]:
-        service = self._get_service(location)
-
         r = _slurmapi_request(
             "GET",
-            f"{service.api_address}/slurm/{service.api_version}/jobs",
-            self._get_jwt_token(location),
+            f"{self.api_address}/slurm/{self.api_version}/jobs",
+            self._get_jwt_token(),
         )
 
         # get all jobs
@@ -424,13 +447,11 @@ class SlurmApiConnector(QueueManagerConnector):
     async def _remove_jobs(
         self, location: ExecutionLocation, jobs: MutableSequence[str]
     ) -> None:
-        #FIXME: when streamflow is forcibly stopped, the service is not available, therefore the location (and token) are not accessible.
-        service = self._get_service(location)
-
+        # FIXME
         r = _slurmapi_request(
             "DELETE",
-            f"{service.api_address}/slurm/{service.api_version}/jobs",
-            self._get_jwt_token(location),
+            f"{self.api_address}/slurm/{self.api_version}/jobs",
+            self._get_jwt_token(),
             json={"jobs": jobs},
         )
 
@@ -460,14 +481,14 @@ class SlurmApiConnector(QueueManagerConnector):
             "environment": env,
             "time_limit": timeout,
             "current_working_directory": workdir,
-            "standard_output": self._format_stream(stdout),
-            "standard_error": self._format_stream(stdout),
-            "standard_input": (
-                shlex.quote(stdin)
-                if stdin not in (None, asyncio.subprocess.DEVNULL)
-                else None
-            ),
         }
+
+        if stdin is not None and stdin != asyncio.subprocess.DEVNULL:
+            job_cfg["standard_input"] = shlex.quote(stdin)  # type: ignore
+        if stderr != asyncio.subprocess.STDOUT and stderr != stdout:
+            job_cfg["standard_error"] = self._format_stream(stderr)
+        if stdout != asyncio.subprocess.STDOUT:
+            job_cfg["standard_output"] = self._format_stream(stdout)
 
         service = self._get_service(location)
         for k, v in service.__dict__.items():
@@ -476,8 +497,8 @@ class SlurmApiConnector(QueueManagerConnector):
 
         r = _slurmapi_request(
             "POST",
-            f"{service.api_address}/slurm/{service.api_version}/job/submit",
-            self._get_jwt_token(location),
+            f"{self.api_address}/slurm/{self.api_version}/job/submit",
+            self._get_jwt_token(),
             json={"job": job_cfg},
         )
 

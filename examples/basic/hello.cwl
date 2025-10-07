@@ -5,16 +5,13 @@ class: CommandLineTool
 
 baseCommand: ["/bin/sh", "-c"]
 
+requirements:
+  - class: ShellCommandRequirement
+
 inputs: {}
-
-outputs:
-  outputfile:
-    type: stdout
-
-stdout: output.txt
+outputs: {}
 
 arguments:
   - valueFrom: "hostname"
-
 
   
