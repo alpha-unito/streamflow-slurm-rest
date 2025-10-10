@@ -10,8 +10,8 @@ pip install streamflow-slurmrest
 
 Clone this repository and install the package directory using [pip](https://pip.pypa.io/en/stable/). StreamFlow will automatically recognise it as a plugin and load it at each workflow execution.
 ```bash
-git clone https://github.com/alpha-unito/streamflow-slurm-api
-cd streamflow-slurm-api
+git clone https://github.com/alpha-unito/streamflow-slurm-rest
+cd streamflow-slurm-rest
 pip install .
 ```
 
