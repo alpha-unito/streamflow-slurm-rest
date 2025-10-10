@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import base64
 import json
 import logging
 import os
@@ -49,10 +48,10 @@ def _slurmrest_request(
         logger.debug(
             f"""
 ▶️  SLURM API Request:
-        Method: {method}
-        URL: {url}
-        Headers: {headers}
-        Payload: {json.dumps(kwargs, indent=4) if kwargs else None}
+   Method: {method}
+   URL: {url}
+   Headers: {headers}
+   Payload: {json.dumps(kwargs, indent=4) if kwargs else None}
 """
         )
 
@@ -63,7 +62,7 @@ def _slurmrest_request(
         for e in errors:
 
             if logger.isEnabledFor(logging.DEBUG):
-                logger.debug(
+                logger.error(
                     f"""
 ‼️  Error with SLURM API:
     {method} | {url}
@@ -365,7 +364,19 @@ class SlurmRestConnector(QueueManagerConnector):
             json={"job_id": job_id},
         )
 
-        output_path = r.json().get("jobs")[0].get("stdout_expanded", "")
+        # NOTE: getting the latest job should work most of the time, but finding a more robust way would be good
+        jobs = sorted(
+            r.json().get("jobs", []),
+            key=lambda j: j.get("time").get("start"),
+            reverse=True,
+        )
+
+        if logger.isEnabledFor(logging.DEBUG) and len(jobs) > 1:
+            logger.debug(
+                f"⚠️  More than one job found for job ID {job_id} in SLURM API ({location.name})"
+            )
+
+        output_path = jobs[0].get("stdout_expanded", "")
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(
@@ -387,7 +398,21 @@ class SlurmRestConnector(QueueManagerConnector):
             self._get_jwt_token(),
         )
 
-        return_code = f"{r.json().get('jobs')[0].get('exit_code').get('return_code').get('number')}"
+        # NOTE: getting the latest job should work most of the time, but finding a more robust way would be good
+        jobs = sorted(
+            r.json().get("jobs", []),
+            key=lambda j: j.get("start_time").get("number"),
+            reverse=True,
+        )
+
+        if logger.isEnabledFor(logging.DEBUG) and len(jobs) > 1:
+            logger.debug(
+                f"⚠️  More than one job found for job ID {job_id} in SLURM API ({location.name})"
+            )
+
+        return_code = (
+            jobs[0].get("exit_code", {}).get("return_code", {}).get("number", 0)
+        )
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(
@@ -435,7 +460,7 @@ class SlurmRestConnector(QueueManagerConnector):
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(
-                f"ℹ️  Running jobs in SLURM API ({location.name}): {', '.join(running_jobs)}"
+                f"ℹ️  Queried running jobs from SLURM REST API ({location.name}): {', '.join(running_jobs)}"
             )
 
         return running_jobs
@@ -447,7 +472,6 @@ class SlurmRestConnector(QueueManagerConnector):
     async def _remove_jobs(
         self, location: ExecutionLocation, jobs: MutableSequence[str]
     ) -> None:
-        # FIXME
         r = _slurmrest_request(
             "DELETE",
             f"{self.api_address}/slurm/{self.api_version}/jobs",
@@ -502,11 +526,11 @@ class SlurmRestConnector(QueueManagerConnector):
             json={"job": job_cfg},
         )
 
+        job_id = str(r.json().get("job_id"))
+
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(
-                f"ℹ️  Submitted job {job_name} to SLURM API ({location.name}) with ID {r.json().get('job_id')}"
+                f"ℹ️  Submitted job {job_name} to SLURM API ({location.name}) with ID {job_id}"
             )
-
-        job_id = str(r.json().get("job_id"))
 
         return job_id

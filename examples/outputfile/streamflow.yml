@@ -8,26 +8,26 @@ workflows:
     bindings:
       - step: /
         target:
-          deployment: slurm
-          service: broadwell
+          deployment: slurm-deployment
+          service: test-service
 
 deployments:
-  c3sssh:
+  ssh-deployment:
     type: ssh
-    workdir: /beegfs/home/tommaso.fogliobonda/streamflow
+    workdir: /path/to/workdir
     config:
       nodes:
-        - c3sfr1.di.unito.it
-      username: tommaso.fogliobonda
-      sshKey: ~/.ssh/unito/hpc
+        - <ssh-host>
+      username: <ssh-username>
+      sshKey: /path/to/ssh/key
       checkHostKey: false
 
-  slurm:
+  slurm-deployment:
     type: unito.slurmrest
     config:
-      api_address: "https://api.slurm.hpc4ai.unito.it"
-      jwt_token: "/home/tommo/Desktop/Coding/Alpha/streamflow-slurm/streamflow-slurm-rest/examples/jwt"
+      api_address: <slurm-api-address>
+      jwt_token: "/path/to/jwt"
       services:
-        broadwell:
-          partition: "broadwell"
-    wraps: c3sssh
+        test-service:
+          partition: <partition-name>
+    wraps: ssh-deployment
