@@ -1,12 +1,20 @@
 # SLURM REST API Plugin for StreamFlow
 
 ## Installation 
-**NOTE: not published on PyPI yet.**
+<!-- **NOTE: not published on PyPI yet.**
 
 Simply install the package directory from [PyPI]() using [pip](https://pip.pypa.io/en/stable/). StreamFlow will automatically recognise it as a plugin and load it at each workflow execution.
 ```bash
 pip install streamflow-slurmrest
+``` -->
+
+Clone this repository and install the package directory using [pip](https://pip.pypa.io/en/stable/). StreamFlow will automatically recognise it as a plugin and load it at each workflow execution.
+```bash
+git clone https://github.com/alpha-unito/streamflow-slurm-api
+cd streamflow-slurm-api
+pip install .
 ```
+
 
 If everything worked correctly, whenever a workflow execution start the following message should be printed in the log:
 ```bash
