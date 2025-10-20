@@ -136,3 +136,4 @@ dmypy.json
 # Example outputs
 output.txt
 **/jwt
+dev

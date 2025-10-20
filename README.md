@@ -24,18 +24,8 @@ Successfully registered plugin streamflow.plugins.unito.slurmrest.plugin.SlurmRe
 ## Usage
 ```yml
 deployments:
-  ssh-deployment:
-    type: ssh
-    workdir: /path/to/workdir
-    config:
-      nodes:
-        - 10.0.0.1
-      sshKey: /path/to/ssh/key
-      username: <username>
-
   slurm-rest-deployment:
     type: unito.slurmrest
-    wraps: ssh-deployment
     config:
       api_address: <slurm_api_address> # Required
       api_version: v0.0.43  # Optional, default is v0.0.43

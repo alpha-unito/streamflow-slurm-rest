@@ -12,22 +12,12 @@ workflows:
           service: test-service
 
 deployments:
-  ssh-deployment:
-    type: ssh
-    workdir: /path/to/workdir
-    config:
-      nodes:
-        - <ssh-host>
-      username: <ssh-username>
-      sshKey: /path/to/ssh/key
-      checkHostKey: false
-
   slurm-deployment:
     type: unito.slurmrest
+    workdir: /path/to/workdir
     config:
       api_address: <slurm-api-address>
       jwt_token: "/path/to/jwt"
       services:
         test-service:
           partition: <partition-name>
-    wraps: ssh-deployment
