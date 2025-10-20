@@ -47,7 +47,7 @@ def _slurmrest_request(
     if logger.isEnabledFor(logging.DEBUG):
         logger.debug(
             f"""
-▶️  SLURM API Request:
+▶️  SLURM REST API Request:
    Method: {method}
    URL: {url}
    Headers: {headers}
@@ -57,24 +57,21 @@ def _slurmrest_request(
 
     response = requests.request(method, url, headers=headers, **kwargs)
 
-    if response.status_code != 200 or response.json().get("error"):
-        errors = response.json().get("errors", [])
-        for e in errors:
-
-            if logger.isEnabledFor(logging.DEBUG):
-                logger.error(
-                    f"""
-‼️  Error with SLURM API:
-    {method} | {url}
-    Headers: {headers}
-    Payload: {json.dumps(kwargs, indent=4) if kwargs else None}
-    Response Code: {response.status_code}
+    if response.status_code != 200:
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.error(
+                f"""
+‼️  Error with SLURM REST API, {response.status_code} ({response.reason}):
+{method} | {url}
+Headers: {headers}
+Payload: {json.dumps(kwargs, indent=4) if kwargs else None}
+Response Code: {response.status_code}
 """
-                )
-            else:
-                logger.error(
-                    f"‼️  Error with SLURM API: {e.get('error')} ({e.get('description')})"
-                )
+            )
+
+        raise RuntimeError(
+            f"SLURM REST API request failed with status code {response.status_code}: {response.reason}"
+        )
 
     return response
 
