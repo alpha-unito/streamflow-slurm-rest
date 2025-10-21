@@ -10,6 +10,7 @@ from functools import partial
 from importlib.resources import files
 from typing import Any, cast
 import requests
+from streamflow.core import utils
 
 import cachetools
 
@@ -381,10 +382,11 @@ class SlurmRestConnector(QueueManagerConnector):
             )
 
         if output_path := output_path.strip():
-            stdout, _ = await super().run(
-                location=location, command=["cat", output_path], capture_output=True
-            )  # type: ignore
-            return stdout.strip()
+            # stdout, _ = await super().run(
+            #     location=location, command=["cat", output_path], capture_output=True
+            # )  # type: ignore
+            # return stdout.strip()
+            return f"⚠️  WARNING: REST API does not support fetching job output. Output is located at: {output_path}"
         else:
             return ""
 
@@ -531,3 +533,33 @@ class SlurmRestConnector(QueueManagerConnector):
             )
 
         return job_id
+
+    async def run(
+        self,
+        location: ExecutionLocation,
+        command: MutableSequence[str],
+        environment: MutableMapping[str, str] | None = None,
+        workdir: str | None = None,
+        stdin: int | str | None = None,
+        stdout: int | str = asyncio.subprocess.STDOUT,
+        stderr: int | str = asyncio.subprocess.STDOUT,
+        capture_output: bool = False,
+        timeout: int | None = None,
+        job_name: str | None = None,
+    ) -> tuple[str, int] | None:
+        if job_name:
+            return await super().run(
+                location=location,
+                command=command,
+                environment=environment,
+                workdir=workdir,
+                stdin=stdin,
+                stdout=stdout,
+                stderr=stderr,
+                job_name=job_name,
+                timeout=timeout,
+                capture_output=capture_output,
+            )
+        else:
+            print(f"WARNING: cannot run job `{' '.join(command)}` on SLURM REST API")
+            return ("", 0)
