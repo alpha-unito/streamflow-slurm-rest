@@ -382,10 +382,6 @@ class SlurmRestConnector(QueueManagerConnector):
             )
 
         if output_path := output_path.strip():
-            # stdout, _ = await super().run(
-            #     location=location, command=["cat", output_path], capture_output=True
-            # )  # type: ignore
-            # return stdout.strip()
             return f"⚠️  WARNING: REST API does not support fetching job output. Output is located at: {output_path}"
         else:
             return ""
@@ -561,5 +557,8 @@ class SlurmRestConnector(QueueManagerConnector):
                 capture_output=capture_output,
             )
         else:
-            print(f"WARNING: cannot run job `{' '.join(command)}` on SLURM REST API")
-            return ("", 0)
+            if logger.isEnabledFor(logging.WARNING):
+              logger.warning(
+                  f"Cannot run job `{' '.join(command)}` on SLURM REST API"
+              )
+            return ("{}", 0)
