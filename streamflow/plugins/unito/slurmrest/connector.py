@@ -571,17 +571,13 @@ class SlurmRestConnector(QueueManagerConnector):
             env = [f"{k}={v}" for k, v in (environment or {}).items()]
             env.extend(service.environment or [])
 
-            # print(f"#️⃣  Environment: {env}")
-
             if len(env) == 0:
                 env.append("")
-
-            # print(f"#️⃣  {" ".join(command)}")
 
             if command[0] == "test" and len(command) > 4 and command[4] == "readlink":
                 return (command[2].replace("'", ""), 0)
             elif command[0] == "cat" and "cwl.output.json" in command[-1]:
-                return ('{"output_coso": "coso"}', 0)
+                return ('{"dependency_output": ""}', 0)
             elif command[0] == "mkdir":
               command_str = " ".join(command)
               # print(f"#️⃣  Original command: {command_str}")

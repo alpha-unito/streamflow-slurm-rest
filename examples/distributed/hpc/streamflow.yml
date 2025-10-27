@@ -1,0 +1,21 @@
+version: v1.0
+
+workflows:
+  hello-slurm:
+    type: cwl
+    config:
+      file: main.cwl
+    bindings:
+      - step: /
+        target:
+          deployment: slurm
+          service: example
+
+deployments:
+  slurm:
+    type: slurm
+    workdir: <PATH_TO_WORKDIR>  # e.g., /beegfs/home/<user>/.streamflow
+    config:
+      services:
+        example:
+          partition: broadwell

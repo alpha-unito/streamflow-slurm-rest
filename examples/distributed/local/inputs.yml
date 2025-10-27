@@ -1,0 +1,2 @@
+streamflow_path: <PATH_TO_STREAMFLOW_EXECUTABLE>  # e.g., /beegfs/home/<user>/distributed/venv/bin/streamflow
+streamflow_workflow: <PATH_TO_STREAMFLOW_WORKFLOW_YML>  # e.g., /beegfs/home/<user>/distributed/streamflow.yml
