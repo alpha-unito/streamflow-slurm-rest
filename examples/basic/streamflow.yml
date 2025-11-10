@@ -17,7 +17,7 @@ deployments:
     workdir: /path/to/workdir
     config:
       api_address: <slurm-api-address>
-      jwt_token: "/path/to/jwt"
+      jwt_token: "<JWT_TOKEN>" # must start with either "file:" or "env:" or be the token itself
       services:
         test-service:
           partition: <partition-name>

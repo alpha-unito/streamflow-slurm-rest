@@ -48,7 +48,7 @@ def _slurmrest_request(
     if logger.isEnabledFor(logging.DEBUG):
         logger.debug(
             f"""
-▶️  SLURM REST API Request:
+SLURM REST API Request:
    Method: {method}
    URL: {url}
    Headers: {headers}
@@ -62,7 +62,7 @@ def _slurmrest_request(
         if logger.isEnabledFor(logging.DEBUG):
             logger.error(
                 f"""
-‼️  Error with SLURM REST API, {response.status_code} ({response.reason}):
+Error with SLURM REST API, {response.status_code} ({response.reason}):
 {method} | {url}
 Headers: {headers}
 Payload: {json.dumps(kwargs, indent=4) if kwargs else None}
@@ -343,15 +343,29 @@ class SlurmRestConnector(QueueManagerConnector):
 
     def _get_service(self, location: ExecutionLocation) -> SlurmRestService:
         if location.service not in self.services:
-            raise ValueError(f"‼️  Service {location.service} not found")
+            raise ValueError(f"Service {location.service} not found")
         return cast(SlurmRestService, self.services.get(location.service))
 
     def _get_jwt_token(self) -> str:
-        # token can be a path or the token itself
-        if os.path.exists(self.jwt_token):
-            with open(self.jwt_token, "r") as f:
-                return f.read().strip()
+        # if token is a file
+        if self.jwt_token.startswith("file:") and os.path.exists(self.jwt_token[5:]):
+            with open(self.jwt_token[5:], "r") as f:
+                token = f.read().strip()
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug(f"Loaded JWT token from file {self.jwt_token[5:]}")
+                return token
+            
+        # if token is an env variable
+        elif self.jwt_token.startswith("env:"):
+            env_var = self.jwt_token[4:]
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"Loaded JWT token from environment variable {env_var}")
+            return os.getenv(env_var, "EMPTY")
+        
+        # if token is a direct string
         else:
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"Loaded JWT token from raw string")
             return self.jwt_token
 
     async def _get_output(self, job_id: str, location: ExecutionLocation) -> str:
@@ -371,18 +385,18 @@ class SlurmRestConnector(QueueManagerConnector):
 
         if logger.isEnabledFor(logging.DEBUG) and len(jobs) > 1:
             logger.debug(
-                f"⚠️  More than one job found for job ID {job_id} in SLURM API ({location.name})"
+                f"More than one job found for job ID {job_id} in SLURM API ({location.name})"
             )
 
         output_path = jobs[0].get("stdout_expanded", "")
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(
-                f"ℹ️  Stdout path for job {job_id} in SLURM API ({location.name}): {output_path}"
+                f"Stdout path for job {job_id} in SLURM API ({location.name}): {output_path}"
             )
 
         if output_path := output_path.strip():
-            return f"⚠️  WARNING: REST API does not support fetching job output. Output is located at: {output_path}"
+            return f"WARNING: REST API does not support fetching job output. Output is located at: {output_path}"
         else:
             return ""
 
@@ -402,7 +416,7 @@ class SlurmRestConnector(QueueManagerConnector):
 
         if logger.isEnabledFor(logging.DEBUG) and len(jobs) > 1:
             logger.debug(
-                f"⚠️  More than one job found for job ID {job_id} in SLURM API ({location.name})"
+                f"More than one job found for job ID {job_id} in SLURM API ({location.name})"
             )
 
         return_code = (
@@ -411,7 +425,7 @@ class SlurmRestConnector(QueueManagerConnector):
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(
-                f"ℹ️  Return code for job {job_id} in SLURM API ({location.name}): {return_code}"
+                f"Return code for job {job_id} in SLURM API ({location.name}): {return_code}"
             )
 
         return int(return_code)
@@ -455,7 +469,7 @@ class SlurmRestConnector(QueueManagerConnector):
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(
-                f"ℹ️  Queried running jobs from SLURM REST API ({location.name}): {', '.join(running_jobs)}"
+                f"Queried running jobs from SLURM REST API ({location.name}): {', '.join(running_jobs)}"
             )
 
         return running_jobs
@@ -476,7 +490,7 @@ class SlurmRestConnector(QueueManagerConnector):
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(
-                f"ℹ️  Cancelled jobs {', '.join(jobs)} from SLURM API ({location.name})"
+                f"Cancelled jobs {', '.join(jobs)} from SLURM API ({location.name})"
             )
 
     async def _run_batch_command(
@@ -495,8 +509,6 @@ class SlurmRestConnector(QueueManagerConnector):
 
         env = [f"{k}={v}" for k, v in (environment or {}).items()]
         env.extend(service.environment or [])
-
-        # print(f"#️⃣  Environment for job {job_name}: {env}")
 
         if len(env) == 0:
             env.append("")
@@ -532,7 +544,7 @@ class SlurmRestConnector(QueueManagerConnector):
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(
-                f"ℹ️  Submitted job {job_name} to SLURM API ({location.name}) with ID {job_id}"
+                f"Submitted job {job_name} to SLURM API ({location.name}) with ID {job_id}"
             )
 
         return job_id
@@ -580,7 +592,6 @@ class SlurmRestConnector(QueueManagerConnector):
                 return ('{"dependency_output": ""}', 0)
             elif command[0] == "mkdir":
               command_str = " ".join(command)
-              # print(f"#️⃣  Original command: {command_str}")
 
               command_str = self.template_map.get_command(
                   command=command_str,

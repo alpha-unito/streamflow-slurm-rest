@@ -29,7 +29,7 @@ deployments:
     workdir: <PATH_TO_WORKDIR>  # e.g., /beegfs/home/<user>/.streamflow
     config:
       api_address: "https://api.slurm.hpc4ai.unito.it"
-      jwt_token: "<PATH_TO_JWT_TOKEN_FILE>"
+      jwt_token: "<JWT_TOKEN>" # must start with either "file:" or "env:" or be the token itself
       services:
         broadwell:
           environment:
