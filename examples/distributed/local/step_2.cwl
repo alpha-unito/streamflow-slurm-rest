@@ -15,13 +15,17 @@ inputs:
     type: string
   dependency_input:
     type: string
+  streamflow_outdir:
+    type: string
+  streamflow_tmpdir:
+    type: string
 outputs: 
-# ⚠️ IMPORTANT: Because of limitations with the slurm rest API connector this output must be named 'dependency_output'
+  # ⚠️ IMPORTANT: Because of limitations with the slurm rest API connector this output must be named 'dependency_output'
   dependency_output:
     type: string
 
 arguments:
-  - valueFrom: "$(inputs.streamflow_path) run $(inputs.streamflow_workflow)"
+  - valueFrom: "TMPDIR=$(inputs.streamflow_tmpdir) $(inputs.streamflow_path) run $(inputs.streamflow_workflow) --outdir $(inputs.streamflow_outdir)"
     shellQuote: true
 
   

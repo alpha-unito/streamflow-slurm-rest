@@ -25,14 +25,12 @@ deployments:
     config: {}
   slurm:
     type: unito.slurmrest
-    # workdir: /beegfs/home/tommaso.fogliobonda/streamflow
-    workdir: <PATH_TO_WORKDIR>  # e.g., /beegfs/home/<user>/.streamflow
+    workdir: /beegfs/home/dmedic/sogei-gh02/Sogei-DevOps-pipeline/unito-pipeline/prova_streamflow
     config:
       api_address: "https://api.slurm.hpc4ai.unito.it"
-      jwt_token: "<JWT_TOKEN>" # must start with either "file:" or "env:" or be the token itself
+      jwt_token: "<YOUR_JWT_TOKEN>" # can be "env:[ENV_VAR_NAME]" or "file:[PATH_TO_FILE]" or direct token
       services:
         broadwell:
           environment:
-          # PATH should include the path to slurm binaries
             - "PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/slurm/bin"
           partition: "broadwell"

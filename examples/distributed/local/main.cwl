@@ -9,6 +9,10 @@ inputs:
     type: string
   streamflow_workflow:
     type: string
+  streamflow_outdir:
+    type: string
+  streamflow_tmpdir:
+    type: string
 outputs: {}
 
 steps:
@@ -20,6 +24,8 @@ steps:
     in:
       streamflow_path: streamflow_path
       streamflow_workflow: streamflow_workflow
+      streamflow_outdir: streamflow_outdir
+      streamflow_tmpdir: streamflow_tmpdir
       dependency_input: step_1/dependency_output
     run: step_2.cwl
     out: [dependency_output]
