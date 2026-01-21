@@ -622,7 +622,7 @@
     "jwt_token": {
       "type": "string",
       "title": "JWT Token",
-      "description": "JWT token used for authentication. Can be either a raw token or a path to a file containing the token."
+      "description": "JWT token used for authentication. Can be either a raw token, a path to a file containing the token (file:<path>) or the name of an environment variable containing the token (env:<name>)."
     },
     "api_address": {
       "type": "string",
